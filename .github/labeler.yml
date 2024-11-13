@@ -9,11 +9,11 @@ except-sub-project:
     # all files except, top-level files, and files listed in folders that start with `!`
     - all-globs-to-all-files:
         #- '**'
-        - '!sub-project/src/subfolder/**'
-        - '!sub-project/test*/**'
+        - '!sub-project/src/**'
+        - '!test*/**'
 
 only-sub-project:
   - changed-files:
     - any-glob-to-all-files:
-        - 'sub-project/src/migration/**'
-        - 'sub-project/test*/**'
+        - 'sub-project/src/**'
+        - 'test*/**'
