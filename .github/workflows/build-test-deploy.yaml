@@ -7,29 +7,30 @@ on:
     branches: [ main ]
 
 jobs:
-  runs-on: ubuntu-latest
-  timeout-minutes: 5
-  steps:
-    - uses: Brightspace/third-party-actions@actions/checkout
-      # For correct work of `Get PULL_REQUEST_NUMBER (push)`-step
-      with:
-        fetch-depth: 0
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: Brightspace/third-party-actions@actions/checkout
+        # For correct work of `Get PULL_REQUEST_NUMBER (push)`-step
+        with:
+          fetch-depth: 0
 
-    - name: Get PULL_REQUEST_NUMBER (push)
-      if: ${{ github.event_name == 'push' }}
-      run: |
-        pr_number=$(gh pr view --json number -q .number || echo "")
-        echo "PULL_REQUEST_NUMBER=pr_number"
-        echo "PULL_REQUEST_NUMBER=pr_number" >> $GITHUB_ENV
+      - name: Get PULL_REQUEST_NUMBER (push)
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          pr_number=$(gh pr view --json number -q .number || echo "")
+          echo "PULL_REQUEST_NUMBER=pr_number"
+          echo "PULL_REQUEST_NUMBER=pr_number" >> $GITHUB_ENV
 
-    - name: Get PULL_REQUEST_NUMBER (pull_request)
-      if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        echo "PULL_REQUEST_NUMBER=$PR_NUMBER"
-        echo "PULL_REQUEST_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-      env:
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-    
-    - name: Print PULL_REQUEST_NUMBER
-      run: |
-        echo "PR NUMBER: $PULL_REQUEST_NUMBER"
+      - name: Get PULL_REQUEST_NUMBER (pull_request)
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "PULL_REQUEST_NUMBER=$PR_NUMBER"
+          echo "PULL_REQUEST_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+      
+      - name: Print PULL_REQUEST_NUMBER
+        run: |
+          echo "PR NUMBER: $PULL_REQUEST_NUMBER"
