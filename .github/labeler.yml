@@ -15,6 +15,6 @@ except-sub-project:
 only-sub-project:
   - changed-files:
     - any-glob-to-all-files:
-        - '!.github/**'
+        - '!.github/labeler.yaml'
         - 'sub-project/src/**'
         - 'test*/**'
