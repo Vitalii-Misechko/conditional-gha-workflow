@@ -70,6 +70,7 @@ jobs:
 
   actual_job:
     if: ${{ needs.triage.outputs.RES != 1}}
+    needs: [ triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps: 
