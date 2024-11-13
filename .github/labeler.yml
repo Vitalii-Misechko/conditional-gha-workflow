@@ -3,3 +3,20 @@ fact1:
 
 fact2:
   - head-branch: ['fact2']
+
+except-sub-project:
+  - changed-files:
+    # all files except, top-level files, and files listed in folders that start with `!`
+    - all-globs-to-all-files:
+        - '**'
+        - '!sub-project/src/subfolder/**'
+        - '!sub-project/test*/**'
+    - any-glob-to-any-file:
+        # top level files
+        - '*'
+
+only-sub-project:
+  - changed-files:
+    - any-glob-to-all-file:
+        - '!sub-project/src/migration/**'
+        - '!sub-project/test*/**'
