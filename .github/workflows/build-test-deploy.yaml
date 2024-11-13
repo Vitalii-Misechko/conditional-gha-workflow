@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/labeler@v5
       - uses: Brightspace/third-party-actions@actions/checkout
         # For correct work of `Get PULL_REQUEST_NUMBER (push)`-step
         with:
