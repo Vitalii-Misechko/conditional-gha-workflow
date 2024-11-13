@@ -17,6 +17,6 @@ except-sub-project:
 
 only-sub-project:
   - changed-files:
-    - any-glob-to-all-file:
+    - any-glob-to-all-files:
         - '!sub-project/src/migration/**'
         - '!sub-project/test*/**'
