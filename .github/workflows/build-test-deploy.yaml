@@ -83,5 +83,12 @@ jobs:
         run: |
           echo Hello from Actual Job
           echo "RES=$RES"
-        env:
-          RES: ${{ needs.triage.outputs.RES }}
+  
+  job_after:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [actual_job]
+    steps:
+      - name: Greeting 
+        run: |
+          echo Hello from Actual Job 
