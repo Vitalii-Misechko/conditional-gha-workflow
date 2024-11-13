@@ -85,6 +85,7 @@ jobs:
           echo "RES=$RES"
   
   job_after:
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [actual_job]
