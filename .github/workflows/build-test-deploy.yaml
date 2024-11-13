@@ -24,12 +24,7 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         # get PR number from the latest commit
         run: |
-          git log -1
-          git log -1 | grep 'Merge'
-          git log -1 | grep -o -P 'Merge'
-          git log -1 | grep -o -P 'Merge pull request #\d+'
-          git log -1 | grep -o -P 'Merge pull request #\K\d+'
-          pr_number="$(git log -1 | grep -oP 'Merge pull request #\K\d+')"
+          pr_number="$(git log -1 | grep -oP 'Merge pull request #\K\d+' || echo "")"
           echo "PULL_REQUEST_NUMBER=$pr_number"
           echo "PULL_REQUEST_NUMBER=$pr_number" >> $GITHUB_ENV
         env:
