@@ -12,7 +12,7 @@ This repository is playground and test environment for GHA workflow POCs
 - [x] Check when fact1 and fact2 are not set for PR. Merge. RES=0
 
 ### Check execution of Actual Job based or RES value
-- [x] RES=0. Actual Job is executed for branch 
-- [x] RES=0. Actual Job is executed for main
+- [ ] RES=0. Actual Job is executed for branch 
+- [ ] RES=0. Actual Job is executed for main
 - [x] RES=1. Actual Job is skipped for branch 
 - [x] RES=1. Actual Job is skipped for main
