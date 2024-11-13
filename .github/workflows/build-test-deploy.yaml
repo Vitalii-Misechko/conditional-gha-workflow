@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      output1: ${{ steps.set_output.outputs.RES }}
+      RES: ${{ steps.set_output.outputs.RES }}
     steps:
       - uses: actions/labeler@v5
       - uses: Brightspace/third-party-actions@actions/checkout
