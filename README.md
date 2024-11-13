@@ -14,5 +14,5 @@ This repository is playground and test environment for GHA workflow POCs
 ### Check execution of Actual Job based or RES value
 - [x] RES=0. Actual Job is executed for branch 
 - [x] RES=0. Actual Job is executed for main
-- [ ] RES=1. Actual Job is skipped for branch 
-- [ ] RES=1. Actual Job is skipped for main
+- [x] RES=1. Actual Job is skipped for branch 
+- [x] RES=1. Actual Job is skipped for main
