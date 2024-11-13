@@ -15,5 +15,6 @@ except-sub-project:
 only-sub-project:
   - changed-files:
     - any-glob-to-all-files:
+        - '!.github/**'
         - 'sub-project/src/**'
         - 'test*/**'
