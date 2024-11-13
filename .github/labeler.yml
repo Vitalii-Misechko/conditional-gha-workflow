@@ -11,9 +11,6 @@ except-sub-project:
         - '**'
         - '!sub-project/src/subfolder/**'
         - '!sub-project/test*/**'
-    - any-glob-to-any-file:
-        # top level files
-        - '*'
 
 only-sub-project:
   - changed-files:
