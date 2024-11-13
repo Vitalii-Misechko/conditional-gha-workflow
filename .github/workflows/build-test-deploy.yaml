@@ -20,8 +20,8 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         run: |
           pr_number=$(gh pr view --json number -q .number || echo "")
-          echo "PULL_REQUEST_NUMBER=pr_number"
-          echo "PULL_REQUEST_NUMBER=pr_number" >> $GITHUB_ENV
+          echo "PULL_REQUEST_NUMBER=$pr_number"
+          echo "PULL_REQUEST_NUMBER=$pr_number" >> $GITHUB_ENV
         env:
           GH_TOKEN: ${{ github.token }}
 
