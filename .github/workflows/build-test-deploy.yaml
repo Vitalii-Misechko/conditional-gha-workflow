@@ -77,3 +77,6 @@ jobs:
       - name: Greeting
         run: |
           echo Hello from Actual Job
+          echo "RES=$RES"
+        env:
+          RES: ${{ needs.triage.outputs.RES }}
