@@ -13,6 +13,8 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    outputs:
+      output1: ${{ steps.set_output.outputs.RES }}
     steps:
       - uses: actions/labeler@v5
       - uses: Brightspace/third-party-actions@actions/checkout
@@ -48,6 +50,7 @@ jobs:
           echo "RES=$condition_result" >> $GITHUB_OUTPUT
 
       - name: Set environment variables
+        id: set_output
         run: |
           if [ -z $PULL_REQUEST_NUMBER ]
           then
@@ -73,6 +76,8 @@ jobs:
     needs: [ triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      RES: ${{ needs.triage.outputs.RES }}
     steps: 
       - name: Greeting
         run: |
