@@ -36,3 +36,31 @@ jobs:
       - name: Print PULL_REQUEST_NUMBER
         run: |
           echo "PR NUMBER: $PULL_REQUEST_NUMBER"
+
+      - name: Set DEFAULT environment variables
+        run: |
+          condition_result=0;
+          echo "RES=$condition_result"
+          echo "RES=$condition_result" >> $GITHUB_ENV
+          echo "RES=$condition_result" >> $GITHUB_OUTPUT
+
+      - name: Set environment variables
+        run: |
+          if [ -z $PULL_REQUEST_NUMBER ]
+          then
+            echo There no PR available! Using the default values of environment variables
+            exit 0;
+          fi
+          fact1_label="$(gh api repos/$REPO/pulls/$PULL_REQUEST_NUMBER --jq 'if any(.labels.[]; .name=="fact1") then 1 else 0 end')"
+          fact2_label="$(gh api repos/$REPO/pulls/$PULL_REQUEST_NUMBER --jq 'if any(.labels.[]; .name=="fact2") then 1 else 0 end')"
+          condition_result=0
+          if [ $fact1_label == 1 ] && [ $fact2_label == 0 ]
+          then
+            condition_result=1
+          fi
+          echo "RES=$condition_result"
+          echo "RES=$condition_result" >> $GITHUB_ENV
+          echo "RES=$condition_result" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
