@@ -67,3 +67,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+
+  actual_job:
+    if: ${{ needs.triage.outputs.RES != 1}}
+    needs: [ triage ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps: 
+      - name: Greeting
+        run: |
+          echo Hello from Actual Job
