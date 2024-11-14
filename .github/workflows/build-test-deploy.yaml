@@ -57,14 +57,14 @@ jobs:
             exit 0;
           fi
 
-          sub_project="$(gh pr diff --name-only | grep --quiet -E -i -f .github/sub-project.regex && echo $? || echo $?)"
+          sub_project="$(gh pr diff $PULL_REQUEST_NUMBER --name-only | grep --quiet -E -i -f .github/sub-project.regex && echo $? || echo $?)"
           if [ $sub_project == 0 ]
           then
             echo Found changes in files that match patterns in .github/sub-project.regexp
             gh pr edit $PULL_REQUEST_NUMBER --add-label sub-project
           fi
 
-          non_sub_project="$(gh pr diff --name-only | grep --quiet -E -i -v -f .github/sub-project.regex && echo $? || echo $?)"
+          non_sub_project="$(gh pr diff $PULL_REQUEST_NUMBER --name-only | grep --quiet -E -i -v -f .github/sub-project.regex && echo $? || echo $?)"
           if [ $non_sub_project == 0 ]
           then
             echo Found changes in files that DO NOT MATCH patterns in .github/sub-project.regexp
@@ -72,7 +72,7 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          
+
       - name: Set environment variables
         id: set_output
         run: |
