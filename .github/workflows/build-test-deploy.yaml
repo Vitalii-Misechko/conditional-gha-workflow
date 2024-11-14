@@ -70,7 +70,9 @@ jobs:
             echo Found changes in files that DO NOT MATCH patterns in .github/sub-project.regexp
             gh pr edit $PULL_REQUEST_NUMBER --add-label except-sub-project
           fi
-
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          
       - name: Set environment variables
         id: set_output
         run: |
