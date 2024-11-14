@@ -57,6 +57,8 @@ jobs:
             exit 0;
           fi
 
+          echo Warning! Ensure that .github/sub-project.regex contains LFs not CRLFs
+
           sub_project="$(gh pr diff $PULL_REQUEST_NUMBER --name-only | grep --quiet -E -i -f .github/sub-project.regex && echo $? || echo $?)"
           if [ $sub_project == 0 ]
           then
@@ -68,6 +70,7 @@ jobs:
           if [ $non_sub_project == 0 ]
           then
             echo Found changes in files that DO NOT MATCH patterns in .github/sub-project.regexp
+            gh pr diff $PULL_REQUEST_NUMBER --name-only | grep -E -i -v -f .github/sub-project.regex | head
             gh pr edit $PULL_REQUEST_NUMBER --add-label except-sub-project
           fi
         env:
