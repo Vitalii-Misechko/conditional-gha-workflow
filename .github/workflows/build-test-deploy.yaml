@@ -57,14 +57,11 @@ jobs:
             exit 0;
           fi
 
-          grep --version
-          egrep --version
-
           echo $GREP_OPTIONS
 
           gh pr diff $PULL_REQUEST_NUMBER --name-only
 
-          gh pr diff $PULL_REQUEST_NUMBER --name-only | egrep -i -f .github/sub-project.regex
+          gh pr diff $PULL_REQUEST_NUMBER --name-only | grep -E -i -f .github/sub-project.regex || echo "failed search"
 
           sub_project="$(gh pr diff $PULL_REQUEST_NUMBER --name-only | grep --quiet -E -i -f .github/sub-project.regex && echo $? || echo $?)"
           if [ $sub_project == 0 ]
