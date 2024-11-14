@@ -21,7 +21,7 @@ except-sub-project:
 only-sub-project:
   - all:
     - changed-files:
-      - any-glob-to-any-files:
+      - any-glob-to-any-file:
           - 'sub-project/src/**'
           - 'test*/**'
           # temporary 
