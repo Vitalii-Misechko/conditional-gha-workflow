@@ -14,11 +14,11 @@ except-sub-project:
   - all:
     - changed-files:
       - any-glob-to-any-file:
-          - '**'
           - '*'
-      - all-globs-to-all-files:
-          - '!sub-project/src/**'
-          - '!test*/**'
+      # doesn't work as expected
+      #- all-globs-to-all-files:
+      #    - '!sub-project/src/**'
+      #    - '!test*/**'
 
 sub-project:
   - changed-files:
