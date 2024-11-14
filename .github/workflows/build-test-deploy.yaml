@@ -49,6 +49,28 @@ jobs:
           echo "RES=$condition_result" >> $GITHUB_ENV
           echo "RES=$condition_result" >> $GITHUB_OUTPUT
 
+      - name: Label PR
+        run: |
+          if [ -z $PULL_REQUEST_NUMBER ]
+          then
+            echo There are no PRs available!
+            exit 0;
+          fi
+
+          sub_project="$(gh pr diff --name-only | grep --quiet -E -i -f .github/sub-project.regex && echo $? || echo $?)"
+          if [ $sub_project == 0 ]
+          then
+            echo Found changes in files that match patterns in .github/sub-project.regexp
+            gh pr edit $PULL_REQUEST_NUMBER --add-label sub-project
+          fi
+
+          non_sub_project="$(gh pr diff --name-only | grep --quiet -E -i -v -f .github/sub-project.regex && echo $? || echo $?)"
+          if [ $non_sub_project == 0 ]
+          then
+            echo Found changes in files that DO NOT MATCH patterns in .github/sub-project.regexp
+            gh pr edit $PULL_REQUEST_NUMBER --add-label except-sub-project
+          fi
+
       - name: Set environment variables
         id: set_output
         run: |
@@ -57,8 +79,8 @@ jobs:
             echo There are no PRs available! Using the default values of environment variables
             exit 0;
           fi
-          fact1_label="$(gh api repos/$REPO/pulls/$PULL_REQUEST_NUMBER --jq 'if any(.labels.[]; .name=="fact1") then 1 else 0 end')"
-          fact2_label="$(gh api repos/$REPO/pulls/$PULL_REQUEST_NUMBER --jq 'if any(.labels.[]; .name=="fact2") then 1 else 0 end')"
+          fact1_label="$(gh api repos/$REPO/pulls/$PULL_REQUEST_NUMBER --jq 'if any(.labels.[]; .name=="sub-project") then 1 else 0 end')"
+          fact2_label="$(gh api repos/$REPO/pulls/$PULL_REQUEST_NUMBER --jq 'if any(.labels.[]; .name=="except-sub-project") then 1 else 0 end')"
           condition_result=0
           if [ $fact1_label == 1 ] && [ $fact2_label == 0 ]
           then

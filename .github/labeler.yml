@@ -10,21 +10,23 @@ fact2:
 #
 # use ACTIONS_STEP_DEBUG secret to turn on debugging
 # see https://github.com/actions/toolkit/blob/master/docs/action-debugging.md
-except-sub-project:
-  - all:
-    - changed-files:
-      - any-glob-to-any-file:
-          - '*'
-          - '**'
+# except-sub-project:
+#   - all:
+#     - changed-files:
+#       - any-glob-to-any-file:
+#           - '*'
+#           - '**'
       # doesn't work as expected
       #- all-globs-to-all-files:
       #    - '!sub-project/src/**'
       #    - '!test*/**'
 
-sub-project:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'sub-project/src/**'
-      - 'test*/**'
+# gh pr diff --name-only | grep -E -i -v -f .\sub-project\sub-project.regex
+# gh pr diff --name-only | grep -E -i -f .\sub-project\sub-project.regex
+# sub-project:
+#   - changed-files:
+#     - any-glob-to-any-file:
+#       - 'sub-project/src/**'
+#       - 'test*/**'
       # temporary 
       # - '.github/labeler.yml'
