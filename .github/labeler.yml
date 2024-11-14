@@ -5,7 +5,7 @@ fact2:
   - head-branch: ['fact2']
 
 # creating proper pattern is not an easy task. How do we speed up it?
-#   1. Use a brand new repo where you can change without any team member approve
+#   1. Use a brand new repo where you can make changes without waiting any approval
 #   2. Turn on action debug mode to see actions output. See below
 #
 # use ACTIONS_STEP_DEBUG secret to turn on debugging
@@ -14,11 +14,12 @@ except-sub-project:
   - all:
     - changed-files:
       - any-glob-to-any-file:
-          - '**'
           - '*'
-      - all-globs-to-all-files:
-          - '!sub-project/src/**'
-          - '!test*/**'
+          - '**'
+      # doesn't work as expected
+      #- all-globs-to-all-files:
+      #    - '!sub-project/src/**'
+      #    - '!test*/**'
 
 sub-project:
   - changed-files:
