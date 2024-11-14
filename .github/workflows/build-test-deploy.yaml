@@ -57,12 +57,6 @@ jobs:
             exit 0;
           fi
 
-          echo $GREP_OPTIONS
-
-          gh pr diff $PULL_REQUEST_NUMBER --name-only
-
-          gh pr diff $PULL_REQUEST_NUMBER --name-only | grep -E -i -f .github/sub-project.regex || echo "failed search"
-
           echo Warning! Ensure that .github/sub-project.regex contains LFs not CRLFs
 
           sub_project="$(gh pr diff $PULL_REQUEST_NUMBER --name-only | grep --quiet -E -i -f .github/sub-project.regex && echo $? || echo $?)"
