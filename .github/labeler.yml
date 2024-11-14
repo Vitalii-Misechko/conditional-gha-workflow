@@ -21,8 +21,8 @@ except-sub-project:
 only-sub-project:
   - all:
     - changed-files:
-      - any-glob-to-all-files:
+      - any-glob-to-any-files:
           - 'sub-project/src/**'
           - 'test*/**'
-      - all-globs-to-all-files:
-          - '!.github/labeler.yaml'
+          # temporary 
+          - '.github/labeler.yaml'
