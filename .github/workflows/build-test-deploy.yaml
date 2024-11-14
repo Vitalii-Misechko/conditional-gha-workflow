@@ -57,6 +57,11 @@ jobs:
             exit 0;
           fi
 
+          grep --version
+          egrep --version
+
+          echo $GREP_OPTIONS
+
           gh pr diff $PULL_REQUEST_NUMBER --name-only
 
           gh pr diff $PULL_REQUEST_NUMBER --name-only | egrep -i -f .github/sub-project.regex
