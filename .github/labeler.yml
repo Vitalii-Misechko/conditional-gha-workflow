@@ -15,6 +15,7 @@ except-sub-project:
     - changed-files:
       - any-glob-to-any-file:
           - '*'
+          - '**'
       # doesn't work as expected
       #- all-globs-to-all-files:
       #    - '!sub-project/src/**'
