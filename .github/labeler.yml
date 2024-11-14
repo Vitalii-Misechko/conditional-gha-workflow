@@ -11,13 +11,14 @@ fact2:
 # use ACTIONS_STEP_DEBUG secret to turn on debugging
 # see https://github.com/actions/toolkit/blob/master/docs/action-debugging.md
 except-sub-project:
-  - changed-files:
-    - any-glob-to-any-file:
-        - '**'
-        - '*'
-    - all-globs-to-all-files:
-        - '!sub-project/src/**'
-        - '!test*/**'
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+          - '**'
+          - '*'
+      - all-globs-to-all-files:
+          - '!sub-project/src/**'
+          - '!test*/**'
 
 sub-project:
   - changed-files:
