@@ -1,2 +1,2 @@
-sub-project/src/[^/]+
-test[^/]*/[^/]+
+sub-project/src/[^/]+$
+test[^/]*/[^/]+$
