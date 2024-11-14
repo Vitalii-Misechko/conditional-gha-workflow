@@ -68,6 +68,7 @@ jobs:
           if [ $non_sub_project == 0 ]
           then
             echo Found changes in files that DO NOT MATCH patterns in .github/sub-project.regexp
+            gh pr diff $PULL_REQUEST_NUMBER --name-only | grep -E -i -v -f .github/sub-project.regex | head
             gh pr edit $PULL_REQUEST_NUMBER --add-label except-sub-project
           fi
         env:
