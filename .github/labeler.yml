@@ -25,4 +25,4 @@ only-sub-project:
           - 'sub-project/src/**'
           - 'test*/**'
           # temporary 
-          - '.github/labeler.yaml'
+          - '.github/labeler.yml'
