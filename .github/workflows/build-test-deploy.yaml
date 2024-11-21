@@ -116,6 +116,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [actual_job]
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Greeting 
         run: |
