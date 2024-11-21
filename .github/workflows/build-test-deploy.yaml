@@ -126,4 +126,4 @@ jobs:
           node-version-file: .nvmrc
       - name: A job
         run: |
-          node ./delay.js 300000
+          node ./delay.js
