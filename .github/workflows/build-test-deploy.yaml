@@ -2,9 +2,11 @@ name: Test GHA workflow
 
 on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - '!releases/**'
   push:
-    branches: [ main ]
+    branches:
+      - '!releases/**'
 
 jobs:
   triage:
