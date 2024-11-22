@@ -167,8 +167,8 @@ jobs:
       - uses: Brightspace/third-party-actions@actions/setup-node
       - name: delay 01
         run: |
-          node ./delay.js
-  
+            node ./delay.js
+
   job_after:
     if: ${{ always() }}
     runs-on: ubuntu-latest
