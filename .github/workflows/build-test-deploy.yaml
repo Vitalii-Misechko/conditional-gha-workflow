@@ -99,6 +99,7 @@ jobs:
           REPO: ${{ github.repository }}
 
       - name: Get SYSTEM_TESTS
+        if: ${{ false }}
         run: |
           running_workflows="$(gh variable get SYSTEM_TESTS -e DEPLOY)"
           echo Running workflows $running_workflows
@@ -107,6 +108,7 @@ jobs:
             GH_TOKEN: ${{ github.token }}
 
       - name: Set SYSTEM_TESTS
+        if: ${{ false }}
         run: |
           running_workflows="$(gh variable get SYSTEM_TESTS -e DEPLOY --json value --jq .value | fromjson | . + [$GITHUB_RUN_NUMBER] | tojson)"
           echo Add current RUN_NUMBER to running workflows $running_workflows
@@ -119,6 +121,9 @@ jobs:
     needs: [ triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: false
     env:
       RES: ${{ needs.triage.outputs.RES }}
     steps: 
@@ -126,16 +131,45 @@ jobs:
         run: |
           echo Hello from Actual Job
           echo "RES=$RES"
+      - name: delay 01
+        run: |
+            node ./delay.js
+      - name: delay 02
+        run: |
+          node ./delay.js
+      - name: delay 03
+        run: |
+          node ./delay.js
+      - name: delay 04
+        run: |
+          node ./delay.js
+
+  waiting_job:
+    if: ${{ needs.triage.outputs.RES == '1' }}
+    needs: [ triage ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: false
+    env:
+      RES: ${{ needs.triage.outputs.RES }}
+    steps: 
+      - name: Greeting
+        run: |
+          echo Hello from Waiting Job
+          echo "RES=$RES"
+      - uses: Brightspace/third-party-actions@actions/checkout
+      - uses: Brightspace/third-party-actions@actions/setup-node
+      - name: delay 01
+        run: |
+          node ./delay.js
   
   job_after:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [actual_job]
-    # the job can get cancelled between steps
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: false
+    needs: [actual_job, waiting_job]
     steps:
       - name: Greeting 
         run: |
@@ -149,68 +183,5 @@ jobs:
       - name: delay 01
         run: |
           node ./delay.js
-      - name: delay 01
-        run: |
-          node ./delay.js
-      - name: delay 02
-        run: |
-          node ./delay.js
-      - name: delay 03
-        run: |
-          node ./delay.js
-
-  job_after_parallel:
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [actual_job]
-    # the job can get cancelled between steps
-    # comment
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: false
-    steps:
-      - name: Greeting 
-        run: |
-          echo "Hello from Actual Job Parallel. $ref"
-        env:
-          ref: ${{ github.ref }}
-      - uses: Brightspace/third-party-actions@actions/checkout
-      - uses: Brightspace/third-party-actions@actions/setup-node
-        with:
-          node-version-file: .nvmrc
-      - name: delay 01
-        run: |
-          node ./delay.js
-      - name: delay 01
-        run: |
-          node ./delay.js
-
-  job_after2:
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [job_after]
-    # the job can get cancelled between steps
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: false
-    steps:
-      - name: Greeting 
-        run: |
-          echo "Hello from Actual Job 2. $ref"
-        env:
-          ref: ${{ github.ref }}
-      - uses: Brightspace/third-party-actions@actions/checkout
-      - uses: Brightspace/third-party-actions@actions/setup-node
-        with:
-          node-version-file: .nvmrc
-      - name: delay 01
-        run: |
-          node ./delay.js
-      - name: delay 01
-        run: |
-          node ./delay.js
-
 
 
