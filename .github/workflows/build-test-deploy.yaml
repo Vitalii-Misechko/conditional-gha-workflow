@@ -133,8 +133,10 @@ jobs:
       - uses: Brightspace/third-party-actions@actions/setup-node
       - name: Greeting
         run: |
-          echo Hello from Actual Job
+          echo Hello from Actual Job $ref
           echo "RES=$RES"
+        env:
+          ref: ${{ github.ref }}
       - name: delay 01
         run: |
             node ./delay.js
@@ -161,8 +163,10 @@ jobs:
     steps: 
       - name: Greeting
         run: |
-          echo Hello from Waiting Job
+          echo Hello from Waiting Job $ref
           echo "RES=$RES"
+        env:
+          ref: ${{ github.ref }}
       - uses: Brightspace/third-party-actions@actions/checkout
       - uses: Brightspace/third-party-actions@actions/setup-node
       - name: delay 01
