@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      group: ${{ github.ref }}
+      group: 'job-concurrency-group'
       cancel-in-progress: false
     env:
       RES: ${{ needs.triage.outputs.RES }}
@@ -156,7 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      group: ${{ github.ref }}
+      group: 'job-concurrency-group'
       cancel-in-progress: false
     env:
       RES: ${{ needs.triage.outputs.RES }}
