@@ -1,9 +1,6 @@
 const { argv } = require('node:process');
 
-let duration = 1 * 60 * 1000; // 1 minute
-duration = duration * 1;
-duration = duration * 1;
-duration = duration * 1;
+const duration = 1 * 30 * 1000; // 30 sec
 
 (async () => {
     await new Promise((resolve) => {
