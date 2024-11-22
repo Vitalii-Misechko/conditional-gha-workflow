@@ -124,11 +124,23 @@ jobs:
     steps:
       - name: Greeting 
         run: |
-          echo Hello from Actual Job 
+          echo Hello from Actual Job. $ref
+        env:
+          ref: ${{ github.ref }}
       - uses: Brightspace/third-party-actions@actions/checkout
       - uses: Brightspace/third-party-actions@actions/setup-node
         with:
           node-version-file: .nvmrc
-      - name: A job
+      - name: delay 01
         run: |
           node ./delay.js
+      - name: delay 01
+        run: |
+          node ./delay.js
+      - name: delay 02
+        run: |
+          node ./delay.js
+      - name: delay 03
+        run: |
+          node ./delay.js
+
