@@ -145,3 +145,57 @@ jobs:
         run: |
           node ./delay.js
 
+  job_after_parallel:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [actual_job]
+    # the job can get cancelled between steps
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - name: Greeting 
+        run: |
+          echo "Hello from Actual Job Parallel. $ref"
+        env:
+          ref: ${{ github.ref }}
+      - uses: Brightspace/third-party-actions@actions/checkout
+      - uses: Brightspace/third-party-actions@actions/setup-node
+        with:
+          node-version-file: .nvmrc
+      - name: delay 01
+        run: |
+          node ./delay.js
+      - name: delay 01
+        run: |
+          node ./delay.js
+
+  job_after2:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [job_after]
+    # the job can get cancelled between steps
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - name: Greeting 
+        run: |
+          echo "Hello from Actual Job 2. $ref"
+        env:
+          ref: ${{ github.ref }}
+      - uses: Brightspace/third-party-actions@actions/checkout
+      - uses: Brightspace/third-party-actions@actions/setup-node
+        with:
+          node-version-file: .nvmrc
+      - name: delay 01
+        run: |
+          node ./delay.js
+      - name: delay 01
+        run: |
+          node ./delay.js
+
+
+
