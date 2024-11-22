@@ -100,7 +100,7 @@ jobs:
 
       - name: Get SYSTEM_TESTS
         run: |
-          running_workflows="$(gh variable get SYSTEM_TESTS)"
+          running_workflows="$(gh variable get SYSTEM_TESTS -e DEPLOY)"
           echo Running workflows $running_workflows
           echo Current GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER
         env:
@@ -108,9 +108,9 @@ jobs:
 
       - name: Set SYSTEM_TESTS
         run: |
-          running_workflows="$(gh variable get SYSTEM_TESTS --json value --jq .value | fromjson | . + [$GITHUB_RUN_NUMBER] | tojson)"
+          running_workflows="$(gh variable get SYSTEM_TESTS -e DEPLOY --json value --jq .value | fromjson | . + [$GITHUB_RUN_NUMBER] | tojson)"
           echo Add current RUN_NUMBER to running workflows $running_workflows
-          gh variable set SYSTEM_TESTS -b "$running_workflows"
+          gh variable set SYSTEM_TESTS -e DEPLOY -b "$running_workflows"
         env:
             GH_TOKEN: ${{ github.token }}
 
