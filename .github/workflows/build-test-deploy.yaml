@@ -120,11 +120,11 @@ jobs:
     needs: [actual_job]
     concurrency:
       group: ${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     steps:
       - name: Greeting 
         run: |
-          echo Hello from Actual Job. $ref
+          echo "Hello from Actual Job. $ref"
         env:
           ref: ${{ github.ref }}
       - uses: Brightspace/third-party-actions@actions/checkout
