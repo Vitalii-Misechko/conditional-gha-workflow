@@ -118,6 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [actual_job]
+    # the job can get cancelled between steps
     concurrency:
       group: ${{ github.ref }}
       cancel-in-progress: false
