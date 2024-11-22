@@ -3,10 +3,10 @@ name: Test GHA workflow
 on:
   pull_request:
     branches:
-      - '!releases/**'
+      - '*'
   push:
     branches:
-      - '!releases/**'
+      - '*'
 
 jobs:
   triage:
