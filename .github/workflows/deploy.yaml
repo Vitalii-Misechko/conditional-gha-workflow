@@ -8,7 +8,7 @@ on:
         type: string
       res:
         required: true
-        type: number
+        type: string
     secrets:
       some-secret:
         required: true
