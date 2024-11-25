@@ -108,7 +108,7 @@ jobs:
           #
           SYSTEM_TESTS=$(gh variable get SYSTEM_TESTS --json value --jq '.value')
           echo Current SYSTEM_TESTS=$SYSTEM_TESTS
-          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq 'fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
+          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq 'map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           echo GROUP_NUMBER=$GROUP_NUMBER
           echo GROUP_NUMBER=$GROUP_NUMBER >> $GITHUB_OUTPUT
         env:
