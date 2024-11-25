@@ -191,7 +191,7 @@ jobs:
           GROUP_NUMBER=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
           then
-            echo "#### A system test in the preceding workflow has failed. Cancelling the current workflow! :stop_sign:" >> $GITHUB_STEP_SUMMARY
+            echo "#### A system test #$GROUP_NUMBER in the preceding workflow has failed. Cancelling the current workflow! :stop_sign:" >> $GITHUB_STEP_SUMMARY
             echo A system test in the preceding workflow has failed. Cancelling the current workflow! 
             exit 1
           fi
