@@ -192,7 +192,7 @@ jobs:
           if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
           then
             msg="A system test #$GROUP_NUMBER in the preceding workflow has failed. Cancelling the current workflow!"
-            echo "#### $msg :stop_sign:" >> $GITHUB_STEP_SUMMARY
+            echo "$msg :stop_sign:" >> $GITHUB_STEP_SUMMARY
             echo $msg
             exit 1
           fi
