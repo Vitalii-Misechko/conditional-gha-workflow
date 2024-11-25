@@ -202,7 +202,7 @@ jobs:
   deploy:
     if: ${{ always() }}
     uses: ./.github/workflows/deploy.yaml
-    needs: [ triage ]
+    needs: [ triage, waiting_job, actual_job ]
     with:
       group-number: ${{ needs.triage.outputs.GROUP_NUMBER }}
       res: ${{ needs.triage.outputs.RES }}
