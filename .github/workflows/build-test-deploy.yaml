@@ -109,7 +109,7 @@ jobs:
           #
           # get Max value in $SYSTEM_TESTS that is less then the current $GITHUB_RUN_NUMBER. Defaults to 999999, if $SYSTEM_TESTS does not contains any 
           #
-          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq '.[] |= tonumber | map(select(. <(env.GITHUB_RUN_NUMBER | tonumber))) | max // 999999')
+          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq '.[] |= tonumber | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           echo GROUP_NUMBER=$GROUP_NUMBER
           echo GROUP_NUMBER=$GROUP_NUMBER >> $GITHUB_OUTPUT
         env:
@@ -160,7 +160,7 @@ jobs:
         run: |
           # vars.SYSTEM_TESTS variable doesn't contain recent changes via API. So, we don't use it
           #
-          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. > env.GITHUB_RUN_NUMBER)) | tojson')
+          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. > (env.GITHUB_RUN_NUMBER|tonumber))) | tojson')
           echo "Running workflows in the CI queue $running_workflows"
           gh variable set SYSTEM_TESTS -b "$running_workflows"
         env:
