@@ -185,20 +185,21 @@ jobs:
           ref: ${{ github.ref }}
       - uses: Brightspace/third-party-actions@actions/checkout
       - uses: Brightspace/third-party-actions@actions/setup-node
-      - name: delay 01
-        run: |
-            node ./delay.js
+      # - name: delay 01
+      #   run: |
+      #       node ./delay.js
       - name: Check if a system test in the preceding workflow has failed
         run: |
           GROUP_NUMBER=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
           then
+            echo "### A system test in the preceding workflow has failed. Cancelling the current workflow! :stop:" >> $GITHUB_STEP_SUMMARY
             echo A system test in the preceding workflow has failed. Cancelling the current workflow! 
             exit 1
           fi
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
-          
+
   job_after:
     if: ${{ always() }}
     runs-on: ubuntu-latest
