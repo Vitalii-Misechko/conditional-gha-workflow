@@ -163,7 +163,8 @@ jobs:
           running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(select(. > env.GITHUB_RUN_NUMBER)) | tojson')
           echo "Running workflows in the CI queue $running_workflows"
           gh variable set SYSTEM_TESTS -b "$running_workflows"
-
+        env:
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
   waiting_job:
     if: ${{ needs.triage.outputs.RES == '1' }}
