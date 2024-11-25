@@ -82,8 +82,6 @@ jobs:
         run: |
           if [ -z $PULL_REQUEST_NUMBER ]
           then
-            # TODO: remove the next line. for test purpose only
-            echo "RES=1" >> $GITHUB_OUTPUT
             echo There are no PRs available! Using the default values of environment variables
             exit 0;
           fi
