@@ -106,7 +106,7 @@ jobs:
           #
           # get Max value in $SYSTEM_TESTS that is less then the current $GITHUB_RUN_NUMBER. Defaults to 999999, if $SYSTEM_TESTS does not contains any 
           #
-          SYSTEM_TESTS=$(gh variable get SYSTEM_TESTS --json value)
+          SYSTEM_TESTS=$(gh variable get SYSTEM_TESTS --json value --jq '.value')
           echo Current SYSTEM_TESTS=$SYSTEM_TESTS
           GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq 'fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           echo GROUP_NUMBER=$GROUP_NUMBER
