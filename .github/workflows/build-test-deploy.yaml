@@ -201,7 +201,7 @@ jobs:
 
   deploy:
     if: ${{ always() }}
-    uses: ./deploy.yaml
+    uses: ./.github/workflows/deploy.yaml
     needs: [ triage ]
     with:
       group-number: ${{ needs.triage.outputs.GROUP_NUMBER }}
