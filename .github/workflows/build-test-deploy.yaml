@@ -199,23 +199,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
-  job_after:
+  deploy:
     if: ${{ always() }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [actual_job, waiting_job]
-    steps:
-      - name: Greeting 
-        run: |
-          echo "Hello from Actual Job. $ref"
-        env:
-          ref: ${{ github.ref }}
-      - uses: Brightspace/third-party-actions@actions/checkout
-      - uses: Brightspace/third-party-actions@actions/setup-node
-        with:
-          node-version-file: .nvmrc
-      - name: delay 01
-        run: |
-          node ./delay.js
+    uses: ./deploy.yaml
+    needs: [ triage ]
+    with:
+      group-number: ${{ needs.triage.outputs.GROUP_NUMBER }}
+      res: ${{ needs.triage.outputs.RES }}
+    secrets:
+      some-secret: ${{ needs.triage.outputs.GROUP_NUMBER }}
 
 
