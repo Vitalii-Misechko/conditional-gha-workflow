@@ -158,10 +158,13 @@ jobs:
           node ./delay.js
       - name: Remove current run from SYSTEM_TESTS
         run: |
-          echo SYSTEM_TESTS=$SYSTEM_TESTS
-        env:
-          SYSTEM_TESTS: ${{ vars.SYSTEM_TESTS }}
-          
+          # vars.SYSTEM_TESTS variable doesn't contain recent changes via API. So, we don't use it
+          #
+          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(select(. > env.GITHUB_RUN_NUMBER)) | tojson')
+          echo "Running workflows in the CI queue $running_workflows"
+          gh variable set SYSTEM_TESTS -b "$running_workflows"
+
+
   waiting_job:
     if: ${{ needs.triage.outputs.RES == '1' }}
     needs: [ triage ]
