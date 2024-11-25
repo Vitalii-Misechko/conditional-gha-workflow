@@ -156,7 +156,12 @@ jobs:
       - name: delay 04
         run: |
           node ./delay.js
-
+      - name: Remove current run from SYSTEM_TESTS
+        run: |
+          echo SYSTEM_TESTS=$SYSTEM_TESTS
+        env:
+          SYSTEM_TESTS: ${{ vars.SYSTEM_TESTS }}
+          
   waiting_job:
     if: ${{ needs.triage.outputs.RES == '1' }}
     needs: [ triage ]
