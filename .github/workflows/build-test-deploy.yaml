@@ -109,7 +109,7 @@ jobs:
           #
           # get Max value in $SYSTEM_TESTS that is less then the current $GITHUB_RUN_NUMBER. Defaults to 999999, if $SYSTEM_TESTS does not contains any 
           #
-          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq 'map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER | tonumber))) | max // 999999')
+          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq '.[] |= tonumber | map(select(. <(env.GITHUB_RUN_NUMBER | tonumber))) | max // 999999')
           echo GROUP_NUMBER=$GROUP_NUMBER
           echo GROUP_NUMBER=$GROUP_NUMBER >> $GITHUB_OUTPUT
         env:
@@ -119,7 +119,7 @@ jobs:
       - name: Add current RUN_NUMBER to SYSTEM_TESTS
         if: ${{ env.RES != '1' }}
         run: |
-          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | . + [env.GITHUB_RUN_NUMBER] | tonumber | tojson')
+          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | . + [env.GITHUB_RUN_NUMBER] | map(. | tonumber) | tojson')
           echo "Running workflows $running_workflows"
           gh variable set SYSTEM_TESTS -b "$running_workflows"
         env:
