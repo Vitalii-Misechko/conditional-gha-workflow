@@ -3,10 +3,10 @@ name: Test GHA workflow
 on:
   pull_request:
     branches:
-      - '*'
+      - 'main'
   push:
     branches:
-      - '*'
+      - main
 
 jobs:
   triage:
@@ -15,6 +15,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       RES: ${{ steps.set_output.outputs.RES }}
+      GROUP_NUMBER: ${{ steps.set_output.outputs.GROUP_NUMBER }}
     steps:
       - uses: actions/labeler@v5
       - uses: Brightspace/third-party-actions@actions/checkout
@@ -101,13 +102,14 @@ jobs:
           REPO: ${{ github.repository }}
 
       - name: Get SYSTEM_TESTS
-        if: ${{ false }}
         run: |
           running_workflows="$(gh variable get SYSTEM_TESTS -e DEPLOY)"
           echo Running workflows $running_workflows
           echo Current GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER
+          echo Current SYSTEM_TESTS=$SYSTEM_TESTS
         env:
-            GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
+          SYSTEM_TESTS: ${{ vars.SYSTEM_TESTS }}
 
       - name: Set SYSTEM_TESTS
         if: ${{ false }}
@@ -124,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      group: 'job-concurrency-group'
+      group: ${{ 'job-concurrency-group' }}-${{ github.run_number }}
       cancel-in-progress: false
     env:
       RES: ${{ needs.triage.outputs.RES }}
@@ -156,7 +158,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      group: 'job-concurrency-group'
+      group: ${{ 'job-concurrency-group' }}-${{ needs.triage.outputs.GROUP_NUMBER }}
       cancel-in-progress: false
     env:
       RES: ${{ needs.triage.outputs.RES }}
