@@ -203,6 +203,9 @@ jobs:
     if: ${{ always() }}
     uses: ./.github/workflows/deploy.yaml
     needs: [ triage, waiting_job, actual_job ]
+    concurrency:
+      group: ${{ 'deploy' }}-${{ needs.triage.outputs.GROUP_NUMBER }}
+      cancel-in-progress: false
     with:
       group-number: ${{ needs.triage.outputs.GROUP_NUMBER }}
       res: ${{ needs.triage.outputs.RES }}
