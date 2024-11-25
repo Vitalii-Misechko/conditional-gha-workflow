@@ -103,22 +103,21 @@ jobs:
 
       - name: Get SYSTEM_TESTS
         run: |
-          running_workflows="$(gh variable get SYSTEM_TESTS -e DEPLOY)"
+          running_workflows="$(gh variable get SYSTEM_TESTS)"
           echo Running workflows $running_workflows
           echo Current GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER
           echo Current SYSTEM_TESTS=$SYSTEM_TESTS
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
           SYSTEM_TESTS: ${{ vars.SYSTEM_TESTS }}
 
       - name: Set SYSTEM_TESTS
-        if: ${{ false }}
         run: |
-          running_workflows="$(gh variable get SYSTEM_TESTS -e DEPLOY --json value --jq .value | fromjson | . + [$GITHUB_RUN_NUMBER] | tojson)"
+          running_workflows="$(gh variable get SYSTEM_TESTS --json value --jq .value | fromjson | . + [$GITHUB_RUN_NUMBER] | tojson)"
           echo Add current RUN_NUMBER to running workflows $running_workflows
           gh variable set SYSTEM_TESTS -e DEPLOY -b "$running_workflows"
         env:
-            GH_TOKEN: ${{ github.token }}
+            GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
   actual_job:
     if: ${{ needs.triage.outputs.RES != '1' }}
