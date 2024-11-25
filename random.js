@@ -1,4 +1,4 @@
-const variable1 = 2;
+const variable1 = 1;
 const variable2 = 1;
 const variable3 = 1;
 
