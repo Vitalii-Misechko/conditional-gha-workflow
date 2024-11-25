@@ -196,7 +196,9 @@ jobs:
             echo A system test in the preceding workflow has failed. Cancelling the current workflow! 
             exit 1
           fi
-
+        env:
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
+          
   job_after:
     if: ${{ always() }}
     runs-on: ubuntu-latest
