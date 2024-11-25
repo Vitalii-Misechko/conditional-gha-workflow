@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       RES: ${{ steps.set_output.outputs.RES }}
-      GROUP_NUMBER: ${{ steps.set_output.outputs.GROUP_NUMBER }}
+      GROUP_NUMBER: ${{ steps.sys_tests.outputs.GROUP_NUMBER }}
     steps:
       - uses: actions/labeler@v5
       - uses: Brightspace/third-party-actions@actions/checkout
@@ -102,22 +102,27 @@ jobs:
           REPO: ${{ github.repository }}
 
       - name: Get SYSTEM_TESTS
+        id: sys_tests
         run: |
-          running_workflows="$(gh variable get SYSTEM_TESTS)"
-          echo Running workflows $running_workflows
           echo Current GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER
           echo Current SYSTEM_TESTS=$SYSTEM_TESTS
+          #
+          # get Max value in $SYSTEM_TESTS that is less then the current $GITHUB_RUN_NUMBER. Defaults to 999999, if $SYSTEM_TESTS does not contains any 
+          #
+          GROUP_NUMBER=$(jq '.value | fromjson | map(select(. < $GITHUB_RUN_NUMBER)) | max // 999999' <<< $SYSTEM_TESTS)
+          echo GROUP_NUMBER=$GROUP_NUMBER
+          echo GROUP_NUMBER=$GROUP_NUMBER >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
           SYSTEM_TESTS: ${{ vars.SYSTEM_TESTS }}
 
-      - name: Set SYSTEM_TESTS
+      - name: Add current RUN_NUMBER to SYSTEM_TESTS
+        if: ${{ env.RES != '1' }}
         run: |
-          running_workflows="$(gh variable get SYSTEM_TESTS --json value --jq .value | fromjson | . + [$GITHUB_RUN_NUMBER] | tojson)"
-          echo Add current RUN_NUMBER to running workflows $running_workflows
-          gh variable set SYSTEM_TESTS -e DEPLOY -b "$running_workflows"
+          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | . + [$GITHUB_RUN_NUMBER] | tojson')
+          gh variable set SYSTEM_TESTS -b "$running_workflows"
         env:
-            GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
   actual_job:
     if: ${{ needs.triage.outputs.RES != '1' }}
