@@ -103,16 +103,16 @@ jobs:
         id: sys_tests
         run: |
           echo Current GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER
-          echo Current SYSTEM_TESTS=$SYSTEM_TESTS
           #
           # get Max value in $SYSTEM_TESTS that is less then the current $GITHUB_RUN_NUMBER. Defaults to 999999, if $SYSTEM_TESTS does not contains any 
           #
-          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq '.[] |= tonumber | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
+          SYSTEM_TESTS=$(gh variable get SYSTEM_TESTS --json value --jq '.value')
+          echo Current SYSTEM_TESTS=$SYSTEM_TESTS
+          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq 'map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           echo GROUP_NUMBER=$GROUP_NUMBER
           echo GROUP_NUMBER=$GROUP_NUMBER >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
-          SYSTEM_TESTS: ${{ vars.SYSTEM_TESTS }}
 
       - name: Add current RUN_NUMBER to SYSTEM_TESTS
         if: ${{ env.RES != '1' }}
