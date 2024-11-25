@@ -3,20 +3,19 @@ name: Test GHA workflow
 on:
   pull_request:
     branches:
-      - '!releases/**'
+      - 'main'
   push:
     branches:
-      - '!releases/**'
+      - main
 
 jobs:
   triage:
-    permissions:
-      contents: read
-      pull-requests: write
+    permissions: write-all
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       RES: ${{ steps.set_output.outputs.RES }}
+      GROUP_NUMBER: ${{ steps.sys_tests.outputs.GROUP_NUMBER }}
     steps:
       - uses: actions/labeler@v5
       - uses: Brightspace/third-party-actions@actions/checkout
@@ -100,28 +99,122 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
 
+      - name: Get SYSTEM_TESTS
+        id: sys_tests
+        run: |
+          echo Current GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER
+          echo Current SYSTEM_TESTS=$SYSTEM_TESTS
+          #
+          # get Max value in $SYSTEM_TESTS that is less then the current $GITHUB_RUN_NUMBER. Defaults to 999999, if $SYSTEM_TESTS does not contains any 
+          #
+          GROUP_NUMBER=$(echo $SYSTEM_TESTS | jq '.[] |= tonumber | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
+          echo GROUP_NUMBER=$GROUP_NUMBER
+          echo GROUP_NUMBER=$GROUP_NUMBER >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
+          SYSTEM_TESTS: ${{ vars.SYSTEM_TESTS }}
+
+      - name: Add current RUN_NUMBER to SYSTEM_TESTS
+        if: ${{ env.RES != '1' }}
+        run: |
+          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | . + [env.GITHUB_RUN_NUMBER] | map(. | tonumber) | tojson')
+          echo "Running workflows $running_workflows"
+          gh variable set SYSTEM_TESTS -b "$running_workflows"
+        env:
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
+
   actual_job:
     if: ${{ needs.triage.outputs.RES != '1' }}
     needs: [ triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    concurrency:
+      group: ${{ 'job-concurrency-group' }}-${{ github.run_number }}
+      cancel-in-progress: false
+    env:
+      RES: ${{ needs.triage.outputs.RES }}
+    steps: 
+      - uses: Brightspace/third-party-actions@actions/checkout
+      - uses: Brightspace/third-party-actions@actions/setup-node
+      - name: Greeting
+        run: |
+          echo Hello from Actual Job $ref
+          echo "RES=$RES"
+        env:
+          ref: ${{ github.ref }}
+      - name: delay 01
+        run: |
+            node ./delay.js
+      - name: delay 02
+        run: |
+          node ./delay.js
+      - name: delay 03
+        run: |
+          node ./delay.js
+      - name: delay 04
+        run: |
+          node ./delay.js
+      - name: Remove current run from SYSTEM_TESTS
+        run: |
+          # vars.SYSTEM_TESTS variable doesn't contain recent changes via API. So, we don't use it
+          #
+          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. > (env.GITHUB_RUN_NUMBER|tonumber))) | tojson')
+          echo "Running workflows in the CI queue $running_workflows"
+          gh variable set SYSTEM_TESTS -b "$running_workflows"
+        env:
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
+
+  waiting_job:
+    if: ${{ needs.triage.outputs.RES == '1' }}
+    needs: [ triage ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: ${{ 'job-concurrency-group' }}-${{ needs.triage.outputs.GROUP_NUMBER }}
+      cancel-in-progress: false
     env:
       RES: ${{ needs.triage.outputs.RES }}
     steps: 
       - name: Greeting
         run: |
-          echo Hello from Actual Job
+          echo Hello from Waiting Job $ref
           echo "RES=$RES"
-  
+        env:
+          ref: ${{ github.ref }}
+      - uses: Brightspace/third-party-actions@actions/checkout
+      - uses: Brightspace/third-party-actions@actions/setup-node
+      # - name: delay 01
+      #   run: |
+      #       node ./delay.js
+      - name: Check if a system test in the preceding workflow has failed
+        run: |
+          GROUP_NUMBER=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
+          if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
+          then
+            echo "#### A system test in the preceding workflow has failed. Cancelling the current workflow! :stop_sign:" >> $GITHUB_STEP_SUMMARY
+            echo A system test in the preceding workflow has failed. Cancelling the current workflow! 
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
+
   job_after:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [actual_job]
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: true
+    needs: [actual_job, waiting_job]
     steps:
       - name: Greeting 
         run: |
-          echo Hello from Actual Job 
+          echo "Hello from Actual Job. $ref"
+        env:
+          ref: ${{ github.ref }}
+      - uses: Brightspace/third-party-actions@actions/checkout
+      - uses: Brightspace/third-party-actions@actions/setup-node
+        with:
+          node-version-file: .nvmrc
+      - name: delay 01
+        run: |
+          node ./delay.js
+
+
