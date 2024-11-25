@@ -119,7 +119,8 @@ jobs:
       - name: Add current RUN_NUMBER to SYSTEM_TESTS
         if: ${{ env.RES != '1' }}
         run: |
-          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | . + [$GITHUB_RUN_NUMBER] | tojson')
+          running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | . + [env.GITHUB_RUN_NUMBER] | tojson')
+          echo "Running workflows $running_workflows"
           gh variable set SYSTEM_TESTS -b "$running_workflows"
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
