@@ -92,8 +92,6 @@ jobs:
           then
             condition_result=1
           fi
-          # TODO: remove
-          condition_result=1
           echo "RES=$condition_result"
           echo "RES=$condition_result" >> $GITHUB_ENV
           echo "RES=$condition_result" >> $GITHUB_OUTPUT
