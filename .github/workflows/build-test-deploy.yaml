@@ -52,6 +52,7 @@ jobs:
 
       - name: Label PR
         run: |
+          set -eux
           if [ -z $PULL_REQUEST_NUMBER ]
           then
             echo There are no PRs available!
@@ -80,6 +81,7 @@ jobs:
       - name: Set environment variables
         id: set_output
         run: |
+          set -eux
           if [ -z $PULL_REQUEST_NUMBER ]
           then
             echo There are no PRs available! Using the default values of environment variables
@@ -92,6 +94,8 @@ jobs:
           then
             condition_result=1
           fi
+          # TODO: temp
+          condition_result=1
           echo "RES=$condition_result"
           echo "RES=$condition_result" >> $GITHUB_ENV
           echo "RES=$condition_result" >> $GITHUB_OUTPUT
@@ -117,6 +121,7 @@ jobs:
       - name: Add current RUN_NUMBER to SYSTEM_TESTS
         if: ${{ env.RES != '1' }}
         run: |
+          set -eux
           running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | . + [env.GITHUB_RUN_NUMBER] | map(. | tonumber) | tojson')
           echo "Running workflows $running_workflows"
           gh variable set SYSTEM_TESTS -b "$running_workflows"
@@ -181,11 +186,6 @@ jobs:
           echo "RES=$RES"
         env:
           ref: ${{ github.ref }}
-      - uses: Brightspace/third-party-actions@actions/checkout
-      - uses: Brightspace/third-party-actions@actions/setup-node
-      # - name: delay 01
-      #   run: |
-      #       node ./delay.js
       - name: Check if a system test in the preceding workflow has failed
         run: |
           GROUP_NUMBER=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
