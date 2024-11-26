@@ -188,7 +188,7 @@ jobs:
           ref: ${{ github.ref }}
       - name: Check if a system test in the preceding workflow has failed
         run: |
-          GROUP_NUMBER=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
+          GROUP_NUMBER=$(gh variable get -R "$GITHUB_REPOSITORY" SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
           then
             msg="A system test #$GROUP_NUMBER in the preceding workflow has failed. Cancelling the current workflow!"
