@@ -127,7 +127,6 @@ jobs:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
   actual_job:
-    if: ${{ needs.triage.outputs.RES != '1' }}
     needs: [ triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -168,7 +167,6 @@ jobs:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
   waiting_job:
-    if: ${{ needs.triage.outputs.RES == '1' }}
     needs: [ triage, actual_job ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
