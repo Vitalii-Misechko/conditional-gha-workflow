@@ -137,7 +137,7 @@ jobs:
     env:
       RES: ${{ needs.triage.outputs.RES }}
     outputs:
-      RES: ${{ steps.system-tests-check.outputs.RES }}
+      NOT_PROMOTED: ${{ !steps.system-tests-check.outputs.NOT_PROMOTED }}
     steps: 
       - name: Greeting
         run: |
@@ -150,14 +150,14 @@ jobs:
         id: system-tests-check
         run: |
           set -eux
-          RES=1
+          NOT_PROMOTED=1
           GROUP_NUMBER=$(gh variable get -R "$GITHUB_REPOSITORY" SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
           then
             msg="A system test #$GROUP_NUMBER in the preceding workflow has failed. Promoting this workflow"
             echo "$msg" >> $GITHUB_STEP_SUMMARY
             echo $msg
-            RES=0
+            NOT_PROMOTED=0
           fi
           echo RES=$RES >> $GITHUB_OUTPUT
         env:
@@ -166,7 +166,7 @@ jobs:
   actual_job:
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') &&
-      needs.triage.outputs.RES != '1' && needs.waiting_job.outputs.RES != '1'
+      needs.triage.outputs.RES != '1' && !needs.waiting_job.outputs.NOT_PROMOTED
     needs: [ waiting_job, triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
