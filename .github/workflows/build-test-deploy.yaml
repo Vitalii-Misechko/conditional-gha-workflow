@@ -196,6 +196,9 @@ jobs:
       - name: delay 04
         run: |
           node ./delay.js
+          
+      - run: exit 1
+
       - name: Remove current run from SYSTEM_TESTS
         run: |
           # vars.SYSTEM_TESTS variable doesn't contain recent changes via API. So, we don't use it
