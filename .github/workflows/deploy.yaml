@@ -50,12 +50,3 @@ jobs:
       - name: delay 01
         run: |
           node ./delay.js
-      - name: delay 02
-        run: |
-          node ./delay.js
-      - name: delay 03
-        run: |
-          node ./delay.js
-      - name: delay 04
-        run: |
-          node ./delay.js
