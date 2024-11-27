@@ -126,8 +126,48 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
-  actual_job:
+  waiting_job:
+    if: ${{ needs.triage.outputs.RES == '1' }}
     needs: [ triage ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: 'job-concurrency-group'
+      cancel-in-progress: false
+    env:
+      RES: ${{ needs.triage.outputs.RES }}
+    outputs:
+      RES: ${{ steps.system-tests-check.outputs.RES }}
+    steps: 
+      - name: Greeting
+        run: |
+          echo Hello from Waiting Job $ref
+          echo "RES=$RES"
+        env:
+          ref: ${{ github.ref }}
+          
+      - name: Check if a system test in the preceding workflow has failed
+        id: system-tests-check
+        run: |
+          set -eux
+          RES=1
+          GROUP_NUMBER=$(gh variable get -R "$GITHUB_REPOSITORY" SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
+          if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
+          then
+            msg="A system test #$GROUP_NUMBER in the preceding workflow has failed. Promoting this workflow"
+            echo "$msg" >> $GITHUB_STEP_SUMMARY
+            echo $msg
+            RES=0
+          fi
+          echo RES=$RES >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
+
+  actual_job:
+    if: |
+      always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') &&
+      needs.triage.outputs.RES != '1' && needs.waiting_job.outputs.RES != '1'
+    needs: [ waiting_job, triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
@@ -163,36 +203,6 @@ jobs:
           running_workflows=$(gh variable get SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. > (env.GITHUB_RUN_NUMBER|tonumber))) | tojson')
           echo "Running workflows in the CI queue $running_workflows"
           gh variable set SYSTEM_TESTS -b "$running_workflows"
-        env:
-          GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
-
-  waiting_job:
-    needs: [ triage, actual_job ]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    concurrency:
-      group: 'job-concurrency-group'
-      cancel-in-progress: false
-    env:
-      RES: ${{ needs.triage.outputs.RES }}
-    steps: 
-      - name: Greeting
-        run: |
-          echo Hello from Waiting Job $ref
-          echo "RES=$RES"
-        env:
-          ref: ${{ github.ref }}
-      - name: Check if a system test in the preceding workflow has failed
-        run: |
-          set -eux
-          GROUP_NUMBER=$(gh variable get -R "$GITHUB_REPOSITORY" SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
-          if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
-          then
-            msg="A system test #$GROUP_NUMBER in the preceding workflow has failed. Cancelling the current workflow!"
-            echo "$msg :stop_sign:" >> $GITHUB_STEP_SUMMARY
-            echo $msg
-            exit 1
-          fi
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
