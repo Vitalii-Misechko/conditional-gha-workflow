@@ -132,7 +132,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      group: ${{ 'job-concurrency-group' }}-${{ github.run_number }}
+      group: 'job-concurrency-group'
       cancel-in-progress: false
     env:
       RES: ${{ needs.triage.outputs.RES }}
@@ -169,11 +169,11 @@ jobs:
 
   waiting_job:
     if: ${{ needs.triage.outputs.RES == '1' }}
-    needs: [ triage ]
+    needs: [ triage, actual_job ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      group: ${{ 'job-concurrency-group' }}-${{ needs.triage.outputs.GROUP_NUMBER }}
+      group: 'job-concurrency-group'
       cancel-in-progress: false
     env:
       RES: ${{ needs.triage.outputs.RES }}
