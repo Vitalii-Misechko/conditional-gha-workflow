@@ -163,11 +163,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
+  print_job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [ waiting_job, triage ]
+    steps: 
+      - run: |
+          echo !contains(needs.*.result, 'failure'): ${{ !contains(needs.*.result, 'failure') }}
+          echo !contains(needs.*.result, 'cancelled'): ${{ !contains(needs.*.result, 'cancelled') }}
+          echo needs.triage.outputs.RES != '1': ${{ needs.triage.outputs.RES != '1' }}
+          echo !needs.waiting_job.outputs.NOT_PROMOTED: ${{ !needs.waiting_job.outputs.NOT_PROMOTED }}
+
   actual_job:
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') &&
       needs.triage.outputs.RES != '1' && !needs.waiting_job.outputs.NOT_PROMOTED
-    needs: [ waiting_job, triage ]
+    needs: [ print_job, waiting_job, triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
