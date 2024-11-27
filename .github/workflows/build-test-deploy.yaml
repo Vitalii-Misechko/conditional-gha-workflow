@@ -159,7 +159,7 @@ jobs:
             echo $msg
             NOT_PROMOTED=0
           fi
-          echo RES=$RES >> $GITHUB_OUTPUT
+          echo NOT_PROMOTED=$NOT_PROMOTED >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
