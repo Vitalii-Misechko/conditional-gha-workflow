@@ -138,7 +138,7 @@ jobs:
     env:
       RES: ${{ needs.triage.outputs.RES }}
     outputs:
-      NOT_PROMOTED: ${{ !steps.system-tests-check.outputs.NOT_PROMOTED }}
+      PROMOTED: ${{ !steps.system-tests-check.outputs.PROMOTED }}
     steps: 
       - name: Greeting
         run: |
@@ -151,16 +151,16 @@ jobs:
         id: system-tests-check
         run: |
           set -eux
-          NOT_PROMOTED=1
+          PROMOTED=0
           GROUP_NUMBER=$(gh variable get -R "$GITHUB_REPOSITORY" SYSTEM_TESTS --json value --jq '.value | fromjson | map(. | tonumber) | map(select(. <(env.GITHUB_RUN_NUMBER|tonumber))) | max // 999999')
           if [ "$GROUP_NUMBER" -lt "$GITHUB_RUN_NUMBER" ]
           then
             msg="A system test #$GROUP_NUMBER in the preceding workflow has failed. Promoting this workflow"
             echo "$msg" >> $GITHUB_STEP_SUMMARY
             echo $msg
-            NOT_PROMOTED=0
+            PROMOTED=1
           fi
-          echo NOT_PROMOTED=$NOT_PROMOTED >> $GITHUB_OUTPUT
+          echo PROMOTED=$PROMOTED >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
@@ -175,13 +175,14 @@ jobs:
           echo 1: ${{ !contains(needs.*.result, 'failure') }}
           echo 2: ${{ !contains(needs.*.result, 'cancelled') }}
           echo 3: ${{ needs.triage.outputs.RES != '1' }}
-          echo 4: ${{ !!needs.waiting_job.outputs.NOT_PROMOTED }}, $NOT_PROMOTED.
+          echo 4: ${{ !!needs.waiting_job.outputs.PROMOTED }}, $PROMOTED.
         env:
-          NOT_PROMOTED: ${{ needs.waiting_job.outputs.NOT_PROMOTED }}
+          PROMOTED: ${{ needs.waiting_job.outputs.PROMOTED }}
+
   actual_job:
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') &&
-      needs.triage.outputs.RES != '1' && !needs.waiting_job.outputs.NOT_PROMOTED
+      (needs.triage.outputs.RES != '1' || !!needs.waiting_job.outputs.PROMOTED)
     needs: [ print_job, waiting_job, triage ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
