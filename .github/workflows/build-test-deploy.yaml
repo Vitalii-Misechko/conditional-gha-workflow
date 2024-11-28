@@ -175,7 +175,7 @@ jobs:
           echo 1: ${{ !contains(needs.*.result, 'failure') }}
           echo 2: ${{ !contains(needs.*.result, 'cancelled') }}
           echo 3: ${{ needs.triage.outputs.RES != '1' }}
-          echo 4: ${{ needs.waiting_job.outputs.NOT_PROMOTED }}, $NOT_PROMOTED.
+          echo 4: ${{ !!needs.waiting_job.outputs.NOT_PROMOTED }}, $NOT_PROMOTED.
         env:
           NOT_PROMOTED: ${{ needs.waiting_job.outputs.NOT_PROMOTED }}
   actual_job:
