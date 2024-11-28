@@ -165,6 +165,7 @@ jobs:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
   print_job:
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [ waiting_job, triage ]
