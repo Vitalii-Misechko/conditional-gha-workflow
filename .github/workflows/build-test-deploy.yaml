@@ -127,7 +127,7 @@ jobs:
           GH_TOKEN: ${{ secrets.VARIABLE_MANAGE_TOKEN }}
 
   waiting_job:
-    if: ${{ needs.triage.outputs.RES == '1' && false }}
+    if: ${{ needs.triage.outputs.RES == '1' }}
     # if: ${{ needs.triage.outputs.GROUP_NUMBER < github.run_number }}
     needs: [ triage ]
     runs-on: ubuntu-latest
