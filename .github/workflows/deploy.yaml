@@ -1,0 +1,52 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      group-number:
+        required: true
+        type: string
+      res:
+        required: true
+        type: string
+    secrets:
+      some-secret:
+        required: true
+
+jobs:
+  job_after:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Greeting 
+        run: |
+          echo "Hello from Actual Job. $ref"
+          echo "GROUP NUMBER: $GN"
+        env:
+          ref: ${{ github.ref }}
+          GN: ${{ inputs.group-number }}
+      - uses: Brightspace/third-party-actions@actions/checkout
+      - uses: Brightspace/third-party-actions@actions/setup-node
+        with:
+          node-version-file: .nvmrc
+
+  job_after2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [job_after]
+    steps:
+      - name: Greeting 
+        run: |
+          echo "Hello from Actual Job. $ref"
+          echo "Result: $res"
+        env:
+          ref: ${{ github.ref }}
+          res: ${{ inputs.res }}
+          SECRET: ${{ secrets.some-secret }}
+      - uses: Brightspace/third-party-actions@actions/checkout
+      - uses: Brightspace/third-party-actions@actions/setup-node
+        with:
+          node-version-file: .nvmrc
+      - name: delay 01
+        run: |
+          node ./delay.js
